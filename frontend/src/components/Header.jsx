@@ -1,13 +1,12 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Navbar, Nav, Container, Badge, NavDropdown } from 'react-bootstrap';
-import { FaShoppingCart, FaUser } from 'react-icons/fa';
+import { Navbar, Nav, Container, Badge, NavDropdown, Form, FormControl, Button } from 'react-bootstrap';
+import { FaShoppingCart, FaUser, FaSearch, FaSignOutAlt, FaUserCircle } from 'react-icons/fa';
 import { LinkContainer } from 'react-router-bootstrap';
 import { useSelector, useDispatch } from 'react-redux';
 import { useLogoutMutation } from '../slices/usersApiSlice';
 import { logout } from '../slices/authSlice';
 import { toast } from 'react-toastify';
-import SearchBox from './SearchBox';
 
 const Header = () => {
   const { cartItems } = useSelector(state => state.cart);
@@ -20,7 +19,6 @@ const Header = () => {
     try {
       await logoutApiCall().unwrap();
       dispatch(logout());
-
       navigate('/login');
       toast.success('Logout successful');
     } catch (error) {
@@ -29,69 +27,79 @@ const Header = () => {
   };
 
   return (
-    <Navbar
-      bg='dark'
-      variant='dark'
-      expand='md'
-      collapseOnSelect
-      className='fixed-top z-2 '
-    >
+    <Navbar bg='dark' variant='dark' expand='lg' collapseOnSelect className='fixed-top shadow-lg py-3'>
       <Container>
+        {/* Brand Logo */}
         <LinkContainer to='/'>
-          <Navbar.Brand>MERN Shop</Navbar.Brand>
+          <Navbar.Brand className="fw-bold text-warning fs-4">🛒 MERN Shop</Navbar.Brand>
         </LinkContainer>
+
+        {/* Navbar Toggle for Mobile */}
         <Navbar.Toggle aria-controls='basic-navbar-nav' />
+
         <Navbar.Collapse id='basic-navbar-nav'>
-          <Nav className='ms-auto m-2'>
-            <SearchBox />
+          <Nav className="w-100 d-flex flex-column flex-lg-row align-items-center">
+
+            {/* Search Bar in Center with Full Width */}
+            <Form className="d-flex mx-auto w-100" style={{ maxWidth: '600px' }}>
+              <FormControl type="text" placeholder="Search products..." className="me-2" />
+              <Button variant="warning">
+                <FaSearch />
+              </Button>
+            </Form>
+
+            {/* Cart Icon */}
             <LinkContainer to='/cart'>
-              <Nav.Link>
-                <FaShoppingCart style={{ marginRight: '5px' }} />
+              <Nav.Link className="text-light position-relative mx-3">
+                <FaShoppingCart className="me-1" />
                 Cart
                 {cartItems.length > 0 && (
-                  <Badge
-                    pill
-                    bg='warning'
-                    style={{ marginLeft: '5px' }}
-                    className='text-dark'
-                  >
-                    <strong>
-                      {cartItems.reduce((acc, item) => acc + item.qty, 0)}
-                    </strong>
+                  <Badge pill bg='warning' className='text-dark position-absolute top-0 start-100 translate-middle'>
+                    {cartItems.reduce((acc, item) => acc + item.qty, 0)}
                   </Badge>
                 )}
               </Nav.Link>
             </LinkContainer>
+
+            {/* User Dropdown */}
             {userInfo ? (
-              <NavDropdown title={`Hello👋, ${userInfo.name}`} id='username'>
+              <NavDropdown 
+                title={<span className="text-light"><FaUserCircle className="me-1" /> {userInfo.name}</span>}
+                id='username'
+                className="custom-dropdown mx-3"
+              >
                 <LinkContainer to='/profile'>
-                  <NavDropdown.Item>Profile</NavDropdown.Item>
+                  <NavDropdown.Item>
+                    <FaUser className="me-2" /> Profile
+                  </NavDropdown.Item>
                 </LinkContainer>
                 <NavDropdown.Item onClick={logoutHandler}>
-                  Logout
+                  <FaSignOutAlt className="me-2 text-danger" /> Logout
                 </NavDropdown.Item>
               </NavDropdown>
             ) : (
               <LinkContainer to='/login'>
-                <Nav.Link>
-                  <FaUser style={{ marginRight: '5px' }} />
+                <Nav.Link className="text-light mx-3">
+                  <FaUser className="me-1" />
                   Sign In
                 </Nav.Link>
               </LinkContainer>
             )}
-            {/* {userInfo && userInfo.isAdmin && (
-                <NavDropdown title='Admin' id='adminmenu'>
-                  <LinkContainer to='/admin/product-list'>
-                    <NavDropdown.Item>Products</NavDropdown.Item>
-                  </LinkContainer>
-                  <LinkContainer to='/admin/order-list'>
-                    <NavDropdown.Item>Orders</NavDropdown.Item>
-                  </LinkContainer>
-                  <LinkContainer to='/admin/user-list'>
-                    <NavDropdown.Item>Users</NavDropdown.Item>
-                  </LinkContainer>
-                </NavDropdown>
-              )} */}
+
+            {/* Admin Panel (Only for Admins) */}
+            {userInfo && userInfo.isAdmin && (
+              <NavDropdown title='Admin Panel' id='adminmenu' className="custom-dropdown mx-3">
+                <LinkContainer to='/admin/product-list'>
+                  <NavDropdown.Item>🛍️ Products</NavDropdown.Item>
+                </LinkContainer>
+                <LinkContainer to='/admin/order-list'>
+                  <NavDropdown.Item>📦 Orders</NavDropdown.Item>
+                </LinkContainer>
+                <LinkContainer to='/admin/user-list'>
+                  <NavDropdown.Item>👥 Users</NavDropdown.Item>
+                </LinkContainer>
+              </NavDropdown>
+            )}
           </Nav>
         </Navbar.Collapse>
       </Container>

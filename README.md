@@ -2,7 +2,6 @@
 
 Welcome to the eCommerce Platform Project built using the MERN (MongoDB, Express.js, React, Node.js) Stack. This project provides a robust and full-featured online shopping platform with various functionalities to enhance the user experience.
 
-**Live App Demo** : [https://mern-shop-abxs.onrender.com/](https://mern-shop-abxs.onrender.com/)</br>
 Note: Please be aware that Render's free tier will automatically shut down after 15 minutes of inactivity. Consequently, the first request after reactivation may experience a delay, but subsequent requests will be faster.
 
 ## Features
@@ -24,6 +23,31 @@ Note: Please be aware that Render's free tier will automatically shut down after
 - **Database Seeder**: Easily populate the database with sample products and users.
 
 ## Getting Started
+
+"scripts": {
+  // Start the backend server using Node.js (for production use)
+  "start": "node backend/server.js",
+
+  // Start the backend server with Nodemon (for development use)
+  // Nodemon automatically restarts the server when file changes are detected
+  "server": "nodemon backend/server.js",
+
+  // Start the React frontend from the 'frontend' folder
+  "client": "npm start --prefix frontend",
+
+  // Run both backend (server) and frontend (client) concurrently
+  // This ensures both services start together in development mode
+  "dev": "concurrently \"npm run server\" \"npm run client\"",
+
+  // Seed (import) sample data into the database by running the seeder script
+  "data:import": "node backend/seeder.js",
+
+  // Delete (destroy) all seeded data from the database using the seeder script with '-d' flag
+  "data:destroy": "node backend/seeder.js -d",
+
+  // Install dependencies for both backend and frontend, then build the frontend for production
+  "build": "npm install && npm install --prefix frontend && npm run build --prefix frontend"
+}
 
 ### Prerequisites
 

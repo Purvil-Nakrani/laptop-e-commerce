@@ -1,13 +1,13 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 
-// Define the schema for orders
+// Schema for orders
 const orderSchema = new mongoose.Schema(
   {
     // Reference to the user who placed the order
     user: {
       type: mongoose.Schema.Types.ObjectId,
       required: true,
-      ref: 'User'
+      ref: "User",
     },
     // Array of order items, each containing product details
     orderItems: [
@@ -19,28 +19,28 @@ const orderSchema = new mongoose.Schema(
         product: {
           type: mongoose.Schema.Types.ObjectId,
           required: true,
-          ref: 'Product'
-        }
-      }
+          ref: "Product",
+        },
+      },
     ],
     // Shipping address details
     shippingAddress: {
       address: { type: String, required: true },
       city: { type: String, required: true },
       postalCode: { type: String, required: true },
-      country: { type: String, required: true }
+      country: { type: String, required: true },
     },
     // Payment method used for the order
     paymentMethod: {
       type: String,
-      required: true
+      required: true,
     },
     // Details of the payment result
     paymentResult: {
       id: { type: String },
       status: { type: String },
       update_time: { type: String },
-      email_address: { type: String }
+      email_address: { type: String },
     },
     // Prices and totals
     itemsPrice: { type: Number, required: true, default: 0.0 },
@@ -51,16 +51,14 @@ const orderSchema = new mongoose.Schema(
     isPaid: { type: Boolean, required: true, default: false },
     paidAt: { type: Date },
     isDelivered: { type: Boolean, required: true, default: false },
-    deliveredAt: { type: Date }
+    deliveredAt: { type: Date },
   },
   {
     // Include timestamps for createdAt and updatedAt
-    timestamps: true
+    timestamps: true,
   }
 );
 
-// Create the Order model
-const Order = mongoose.model('Order', orderSchema);
+const Order = mongoose.model("Order", orderSchema);
 
-// Export the Order model
 export default Order;

@@ -8,6 +8,7 @@ import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import Loader from './Loader';
 
 const ProfileForm = () => {
+  // State for form fields
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -16,39 +17,52 @@ const ProfileForm = () => {
   const [showConfirmPassword, setConfirmShowPassword] = useState(false);
 
   const { userInfo } = useSelector(state => state.auth);
-
-  const [updateProfile, { isLoading: isUpdateProfileLoading }] =
-    useProfileMutation();
-
   const dispatch = useDispatch();
 
+  // API call to update profile
+  const [updateProfile, { isLoading: isUpdateProfileLoading }] = useProfileMutation();
+
+  // Toggle visibility for password field
   const togglePasswordVisibility = () => {
-    setShowPassword(!showPassword);
-  };
-  const toggleConfirmPasswordVisibility = () => {
-    setConfirmShowPassword(!showConfirmPassword);
+    setShowPassword(prev => !prev);
   };
 
+  // Toggle visibility for confirm password field
+  const toggleConfirmPasswordVisibility = () => {
+    setConfirmShowPassword(prev => !prev);
+  };
+
+  // Form submission handler
   const submitHandler = async e => {
     e.preventDefault();
 
+    // Validate passwords match
+    if (password !== confirmPassword) {
+      return toast.error('Passwords do not match!');
+    }
+
     try {
-      if (password !== confirmPassword) {
-        return toast.error('Passwords do not match!');
-      }
+      // Update user profile
       const res = await updateProfile({ name, email, password }).unwrap();
+
+      // Dispatch updated credentials
       dispatch(setCredentials({ ...res }));
+
+      // Reset form fields
       setName('');
       setEmail('');
       setPassword('');
       setConfirmPassword('');
+
       toast.success(res.message);
     } catch (error) {
       toast.error(error?.data?.message || error.error);
     }
   };
+
   return (
-    <Form onSubmit={submitHandler}>
+    <Form onSubmit={submitHandler} className="p-3 border rounded bg-light shadow">
+      {/* Name Field */}
       <Form.Group className='mb-3' controlId='name'>
         <Form.Label>Name</Form.Label>
         <Form.Control
@@ -56,8 +70,11 @@ const ProfileForm = () => {
           type='text'
           placeholder='Enter name'
           onChange={e => setName(e.target.value)}
+          required
         />
       </Form.Group>
+
+      {/* Email Field */}
       <Form.Group className='mb-3' controlId='email'>
         <Form.Label>Email address</Form.Label>
         <Form.Control
@@ -65,8 +82,11 @@ const ProfileForm = () => {
           type='email'
           placeholder='Enter email'
           onChange={e => setEmail(e.target.value)}
+          required
         />
       </Form.Group>
+
+      {/* Password Field */}
       <Form.Group className='mb-3' controlId='password'>
         <Form.Label>Password</Form.Label>
         <InputGroup>
@@ -76,15 +96,18 @@ const ProfileForm = () => {
             placeholder='Enter password'
             onChange={e => setPassword(e.target.value)}
           />
+          {/* Toggle Button for Password Visibility */}
           <InputGroup.Text
             onClick={togglePasswordVisibility}
-            id='togglePasswordVisibility'
+            className="bg-white border"
             style={{ cursor: 'pointer' }}
           >
             {showPassword ? <FaEye /> : <FaEyeSlash />}
           </InputGroup.Text>
         </InputGroup>
       </Form.Group>
+
+      {/* Confirm Password Field */}
       <Form.Group className='mb-3' controlId='confirmPassword'>
         <Form.Label>Confirm Password</Form.Label>
         <InputGroup>
@@ -94,18 +117,23 @@ const ProfileForm = () => {
             placeholder='Confirm password'
             onChange={e => setConfirmPassword(e.target.value)}
           />
+          {/* Toggle Button for Confirm Password Visibility */}
           <InputGroup.Text
             onClick={toggleConfirmPasswordVisibility}
-            id='toggleConfirmPasswordVisibility'
+            className="bg-white border"
             style={{ cursor: 'pointer' }}
           >
             {showConfirmPassword ? <FaEye /> : <FaEyeSlash />}
           </InputGroup.Text>
         </InputGroup>
       </Form.Group>
-      <Button className='mb-3 w-100' variant='warning' type='submit'>
-        Update
+
+      {/* Submit Button */}
+      <Button className='mb-3 w-100' variant='warning' type='submit' disabled={isUpdateProfileLoading}>
+        Update Profile
       </Button>
+
+      {/* Show Loader While Updating */}
       {isUpdateProfileLoading && <Loader />}
     </Form>
   );

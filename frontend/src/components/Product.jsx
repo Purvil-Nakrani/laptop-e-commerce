@@ -7,47 +7,60 @@ import { addToCart } from '../slices/cartSlice';
 import Rating from './Rating';
 
 const Product = ({ product }) => {
+  // Manage quantity state for adding to cart
   const [qty, setQty] = useState(1);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
+  // Function to handle adding a product to the cart
   const addToCartHandler = () => {
     dispatch(addToCart({ ...product, qty }));
-    navigate('/cart');
+    navigate('/cart'); // Redirect to the cart page after adding item
   };
+
   return (
-    <Card className='my-3 p-3 rounded text-center'>
+    <Card className='my-3 p-3 rounded shadow-sm border-0 text-center'>
+      {/* Product Image & Details Link */}
       <Link
         to={`/product/${product._id}`}
-        style={{ textDecoration: 'none' }}
-        className='text-dark'
+        className='text-dark text-decoration-none'
       >
         <Card.Img
           variant='top'
           src={product.image}
+          className='img-fluid p-2'
           style={{ height: '200px', objectFit: 'contain' }}
         />
         <Card.Body>
-          <Card.Title as='div' className='product-title'>
-            <strong>{product.name}</strong>
+          {/* Product Name */}
+          <Card.Title as='div' className='fw-bold product-title'>
+            {product.name}
           </Card.Title>
 
-          <Card.Text as='div' className='mb-3'>
+          {/* Rating Component */}
+          <Card.Text as='div' className='mb-2 text-muted'>
             <Rating
               value={product.rating}
               text={`(${product.numReviews} reviews)`}
             />
           </Card.Text>
-          <Card.Text as='h3'>{addCurrency(product.price)}</Card.Text>
+
+          {/* Product Price with Currency Format */}
+          <Card.Text as='h4' className='fw-bold text-success'>
+            {addCurrency(product.price)}
+          </Card.Text>
         </Card.Body>
       </Link>
+
+      {/* Add to Cart Button */}
       <Button
         variant='warning'
         type='button'
+        className='w-100 fw-bold'
         disabled={product.countInStock === 0}
         onClick={addToCartHandler}
       >
-        Add To Cart
+        {product.countInStock > 0 ? 'Add To Cart' : 'Out of Stock'}
       </Button>
     </Card>
   );

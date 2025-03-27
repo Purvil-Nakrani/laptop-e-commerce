@@ -10,8 +10,6 @@ import {
   updateUser,
   getUserById,
   admins,
-  resetPasswordRequest,
-  resetPassword
 } from '../controllers/userController.js';
 import { protect, admin } from '../middleware/authMiddleware.js';
 import validateRequest from '../middleware/validator.js';
@@ -37,15 +35,6 @@ const validator = {
     body('name').trim().notEmpty().withMessage('Name is Required').escape(),
     body('isAdmin').isBoolean().withMessage('isAdmin value should be true/false'),
     param('id').exists().withMessage('Id is required').isMongoId().withMessage('Invalid Id')
-  ],
-  resetPasswordRequest: [
-    body('email').trim().notEmpty().withMessage('Email is Required').bail().isEmail().withMessage("Please enter a valid email address")
-  ],
-  resetPassword: [
-    body('password').trim().notEmpty().withMessage('Password is Required').escape().bail()
-      .isLength({ min: 6 }).withMessage('Password must be at least 6 characters'),
-    param('id').exists().withMessage('Id is required').isMongoId().withMessage('Invalid Id'),
-    param('token').trim().notEmpty().withMessage('Token is Required')
   ]
 }
 
@@ -55,8 +44,7 @@ router.route('/')
 
 router.route('/admins').get(protect, admin, admins);
 
-router.post('/reset-password/request', validator.resetPasswordRequest, validateRequest, resetPasswordRequest);
-router.post('/reset-password/reset/:id/:token', validator.resetPassword, validateRequest, resetPassword);
+
 router.post('/login', validator.checkLogin, validateRequest, loginUser);
 router.post('/logout', protect, logoutUser);
 
